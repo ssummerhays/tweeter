@@ -49,4 +49,8 @@ export class PostStatusPresenter {
       this.isLoading = false;
     }
   }
+
+  public checkButtonStatus(post: string, authToken: AuthToken, currentUser: User) {
+    return !post.trim() || !authToken || !currentUser;
+  };
 }
