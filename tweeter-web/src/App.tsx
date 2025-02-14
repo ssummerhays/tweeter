@@ -10,13 +10,15 @@ import Login from "./components/authentication/login/Login";
 import Register from "./components/authentication/register/Register";
 import MainLayout from "./components/mainLayout/MainLayout";
 import Toaster from "./components/toaster/Toaster";
-import { AuthToken, FakeData, Status } from "tweeter-shared";
 import UserItemScroller from "./components/mainLayout/UserItemScroller";
 import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import useUserInfo from "./components/userInfo/UserInfoHook";
 import { FolloweePresenter } from "./presenters/FolloweePresenter";
 import { UserItemView } from "./presenters/UserItemPresenter";
 import { FollowerPresenter } from "./presenters/FollowerPresenter";
+import { StoryPresenter } from "./presenters/StoryPresenter";
+import { FeedPresenter } from "./presenters/FeedPresenter";
+import { StatusItemView } from "./presenters/StatusItemPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -40,27 +42,6 @@ const App = () => {
 };
 
 const AuthenticatedRoutes = () => {
-
-  const loadMoreFeedItems = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-  };
-
-  const loadMoreStoryItems = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-  };
-
   return (
     <Routes>
       <Route element={<MainLayout />}>
@@ -70,8 +51,9 @@ const AuthenticatedRoutes = () => {
           element={
             <StatusItemScroller
               key={3}
-              statusDescription="feed"
-              loadMoreStatusItems={loadMoreFeedItems}
+              presenterGenerator={(view: StatusItemView) =>
+                new FeedPresenter(view)
+              }
             />
           }
         />
@@ -80,8 +62,9 @@ const AuthenticatedRoutes = () => {
           element={
             <StatusItemScroller
               key={4}
-              statusDescription="story"
-              loadMoreStatusItems={loadMoreStoryItems}
+              presenterGenerator={(view: StatusItemView) =>
+                new StoryPresenter(view)
+              }
             />
           }
         />
@@ -90,7 +73,9 @@ const AuthenticatedRoutes = () => {
           element={
             <UserItemScroller
               key={1}
-              presenterGenerator={(view: UserItemView) => new FolloweePresenter(view)}
+              presenterGenerator={(view: UserItemView) =>
+                new FolloweePresenter(view)
+              }
             />
           }
         />
@@ -99,7 +84,9 @@ const AuthenticatedRoutes = () => {
           element={
             <UserItemScroller
               key={2}
-              presenterGenerator={(view: UserItemView) => new FollowerPresenter(view)}
+              presenterGenerator={(view: UserItemView) =>
+                new FollowerPresenter(view)
+              }
             />
           }
         />
