@@ -16,6 +16,7 @@ export class LoginPresenter {
   private userService: UserService;
 
   public isLoading: boolean = false;
+  public noError: boolean = true;
 
   public constructor(view: LoginView) {
     this.view = view;
@@ -24,7 +25,7 @@ export class LoginPresenter {
 
   public checkSubmitButtonStatus(alias: string, password: string): boolean {
     return !alias || !password;
-  };
+  }
 
   public async doLogin(alias: string, password: string, rememberMe: boolean) {
     try {
@@ -34,6 +35,7 @@ export class LoginPresenter {
 
       this.view.updateUserInfo(user, user, authToken, rememberMe);
     } catch (error) {
+      this.noError = false;
       this.view.displayErrorMessage(
         `Failed to log user in because of exception: ${error}`
       );

@@ -40,10 +40,12 @@ const Login = (props: Props) => {
 
   const doLogin = async () => {
     presenter.doLogin(alias, password, rememberMe);
-    if (!!props.originalUrl) {
-      navigate(props.originalUrl);
-    } else {
-      navigate("/");
+    if (presenter.noError) {
+      if (!!props.originalUrl) {
+        navigate(props.originalUrl);
+      } else {
+        navigate("/");
+      }
     }
   };
 
