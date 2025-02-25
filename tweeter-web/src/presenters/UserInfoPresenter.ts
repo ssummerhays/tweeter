@@ -1,18 +1,8 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
+import { MessageView, Presenter } from "./Presenter";
 
-export interface UserInfoView {
-  displayErrorMessage: (message: string, bootstrapClasses?: string) => void;
-  displayInfoMessage: (
-    message: string,
-    duration: number,
-    bootstrapClasses?: string
-  ) => void;
-  clearLastInfoMessage: () => void;
-}
-
-export class UserInfoPresenter {
-  private view: UserInfoView;
+export class UserInfoPresenter extends Presenter<MessageView> {
   private userService: UserService;
 
   public isFollower: boolean = false;
@@ -20,8 +10,8 @@ export class UserInfoPresenter {
   public followerCount: number = -1;
   public isLoading: boolean = false;
 
-  public constructor(view: UserInfoView) {
-    this.view = view;
+  public constructor(view: MessageView) {
+    super(view);
     this.userService = new UserService();
   }
 
@@ -30,7 +20,7 @@ export class UserInfoPresenter {
     currentUser: User,
     displayedUser: User
   ) {
-    try {
+    await this.doFailuareReportingOperation(async () => {
       if (currentUser === displayedUser) {
         this.isFollower = false;
       } else {
@@ -40,37 +30,25 @@ export class UserInfoPresenter {
           displayedUser!
         );
       }
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to determine follower status because of exception: ${error}`
-      );
-    }
+    }, "determine follower status");
   }
 
   public async setNumbFollowees(authToken: AuthToken, displayedUser: User) {
-    try {
+    await this.doFailuareReportingOperation(async () => {
       this.followeeCount = await this.userService.getFolloweeCount(
         authToken,
         displayedUser
       );
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to get followees count because of exception: ${error}`
-      );
-    }
+    }, "get followees count");
   }
 
   public async setNumbFollowers(authToken: AuthToken, displayedUser: User) {
-    try {
+    await this.doFailuareReportingOperation(async () => {
       this.followerCount = await this.userService.getFollowerCount(
         authToken,
         displayedUser
       );
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to get followers count because of exception: ${error}`
-      );
-    }
+    }, "get followers count");
   }
 
   public async followDisplayedUser(
@@ -80,7 +58,7 @@ export class UserInfoPresenter {
   ): Promise<void> {
     event.preventDefault();
 
-    try {
+    await this.doFailuareReportingOperation(async () => {
       this.isLoading = true;
       this.view.displayInfoMessage(`Following ${displayedUser.name}...`, 0);
 
@@ -92,14 +70,10 @@ export class UserInfoPresenter {
       this.isFollower = true;
       this.followerCount = followerCount;
       this.followeeCount = followeeCount;
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to follow user because of exception: ${error}`
-      );
-    } finally {
-      this.view.clearLastInfoMessage();
-      this.isLoading = false;
-    }
+    }, "follow user");
+
+    this.view.clearLastInfoMessage();
+    this.isLoading = false;
   }
 
   public async unfollowDisplayedUser(
@@ -109,7 +83,7 @@ export class UserInfoPresenter {
   ): Promise<void> {
     event.preventDefault();
 
-    try {
+    await this.doFailuareReportingOperation(async () => {
       this.isLoading = true;
       this.view.displayInfoMessage(`Unfollowing ${displayedUser.name}...`, 0);
 
@@ -121,13 +95,9 @@ export class UserInfoPresenter {
       this.isFollower = false;
       this.followerCount = followerCount;
       this.followeeCount = followeeCount;
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to unfollow user because of exception: ${error}`
-      );
-    } finally {
-      this.view.clearLastInfoMessage();
-      this.isLoading = false;
-    }
+    }, "unfollow user");
+
+    this.view.clearLastInfoMessage();
+    this.isLoading = false;
   }
 }

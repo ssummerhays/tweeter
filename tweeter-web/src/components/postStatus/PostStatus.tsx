@@ -2,10 +2,8 @@ import "./PostStatus.css";
 import { useState } from "react";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
-import {
-  PostStatusPresenter,
-  PostStatusView,
-} from "../../presenters/PostStatusPresenter";
+import { PostStatusPresenter } from "../../presenters/PostStatusPresenter";
+import { MessageView } from "../../presenters/Presenter";
 
 const PostStatus = () => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
@@ -14,7 +12,7 @@ const PostStatus = () => {
   const { currentUser, authToken } = useUserInfo();
   const [post, setPost] = useState("");
 
-  const listener: PostStatusView = {
+  const listener: MessageView = {
     displayErrorMessage: displayErrorMessage,
     displayInfoMessage: displayInfoMessage,
     clearLastInfoMessage: clearLastInfoMessage,

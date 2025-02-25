@@ -4,10 +4,8 @@ import { Link } from "react-router-dom";
 import { AuthToken, User } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "./UserInfoHook";
-import {
-  UserInfoPresenter,
-  UserInfoView,
-} from "../../presenters/UserInfoPresenter";
+import { UserInfoPresenter } from "../../presenters/UserInfoPresenter";
+import { MessageView } from "../../presenters/Presenter";
 
 const UserInfo = () => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
@@ -26,7 +24,7 @@ const UserInfo = () => {
     setNumbFollowers(authToken!, displayedUser!);
   }, [displayedUser]);
 
-  const listener: UserInfoView = {
+  const listener: MessageView = {
     displayErrorMessage: displayErrorMessage,
     displayInfoMessage: displayInfoMessage,
     clearLastInfoMessage: clearLastInfoMessage,

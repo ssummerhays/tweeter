@@ -1,25 +1,15 @@
 import { AuthToken, Status, User } from "tweeter-shared";
 import { StatusService } from "../model/service/StatusService";
+import { MessageView, Presenter } from "./Presenter";
 
-export interface PostStatusView {
-  displayInfoMessage: (
-    message: string,
-    duration: number,
-    bootstrapClasses?: string
-  ) => void;
-  displayErrorMessage: (message: string, bootstrapClasses?: string) => void;
-  clearLastInfoMessage: () => void;
-}
-
-export class PostStatusPresenter {
-  private view: PostStatusView;
+export class PostStatusPresenter extends Presenter<MessageView> {
   private statusService: StatusService;
 
   public isLoading = false;
   public post = "";
 
-  public constructor(view: PostStatusView) {
-    this.view = view;
+  public constructor(view: MessageView) {
+    super(view);
     this.statusService = new StatusService();
   }
 
@@ -30,7 +20,7 @@ export class PostStatusPresenter {
   ) {
     event.preventDefault();
 
-    try {
+    await this.doFailuareReportingOperation(async () => {
       this.isLoading = true;
       this.view.displayInfoMessage("Posting status...", 0);
 
@@ -40,17 +30,17 @@ export class PostStatusPresenter {
 
       this.post = "";
       this.view.displayInfoMessage("Status posted!", 2000);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
-      );
-    } finally {
-      this.view.clearLastInfoMessage();
-      this.isLoading = false;
-    }
+    }, "post the status");
+
+    this.view.clearLastInfoMessage();
+    this.isLoading = false;
   }
 
-  public checkButtonStatus(post: string, authToken: AuthToken, currentUser: User) {
+  public checkButtonStatus(
+    post: string,
+    authToken: AuthToken,
+    currentUser: User
+  ) {
     return !post.trim() || !authToken || !currentUser;
-  };
+  }
 }

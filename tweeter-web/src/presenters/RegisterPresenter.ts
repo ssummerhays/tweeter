@@ -2,19 +2,18 @@ import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
 import { Buffer } from "buffer";
 import { ChangeEvent } from "react";
+import { Presenter, View } from "./Presenter";
 
-export interface RegisterView {
+export interface RegisterView extends View {
   updateUserInfo: (
     currentUser: User,
     displayedUser: User | null,
     authToken: AuthToken,
     remember: boolean
   ) => void;
-  displayErrorMessage: (message: string, bootstrapClasses?: string) => void;
 }
 
-export class RegisterPresenter {
-  private view: RegisterView;
+export class RegisterPresenter extends Presenter<RegisterView> {
   private userService: UserService;
 
   public isLoading: boolean = false;
@@ -25,7 +24,7 @@ export class RegisterPresenter {
   public imageFileExtension: string = "";
 
   public constructor(view: RegisterView) {
-    this.view = view;
+    super(view);
     this.userService = new UserService();
   }
 
@@ -36,7 +35,7 @@ export class RegisterPresenter {
     password: string,
     rememberMe: boolean
   ) {
-    try {
+    await this.doFailuareReportingOperation(async () => {
       this.isLoading = true;
 
       const [user, authToken] = await this.userService.register(
@@ -49,14 +48,9 @@ export class RegisterPresenter {
       );
 
       this.view.updateUserInfo(user, user, authToken, rememberMe);
-    } catch (error) {
-      this.noError = false;
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    } finally {
-      this.isLoading = false;
-    }
+    }, "register user");
+
+    this.isLoading = false;
   }
 
   public handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -106,7 +100,7 @@ export class RegisterPresenter {
     alias: string,
     imageUrl: string,
     imageFileExtension: string,
-    password: string,
+    password: string
   ): boolean {
     return (
       !firstName ||
