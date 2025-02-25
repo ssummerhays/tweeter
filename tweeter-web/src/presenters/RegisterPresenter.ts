@@ -1,19 +1,9 @@
-import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
 import { Buffer } from "buffer";
 import { ChangeEvent } from "react";
-import { Presenter, View } from "./Presenter";
+import { AuthenticationView, Presenter, View } from "./Presenter";
 
-export interface RegisterView extends View {
-  updateUserInfo: (
-    currentUser: User,
-    displayedUser: User | null,
-    authToken: AuthToken,
-    remember: boolean
-  ) => void;
-}
-
-export class RegisterPresenter extends Presenter<RegisterView> {
+export class RegisterPresenter extends Presenter<AuthenticationView> {
   private userService: UserService;
 
   public isLoading: boolean = false;
@@ -23,7 +13,7 @@ export class RegisterPresenter extends Presenter<RegisterView> {
   public imageBytes: Uint8Array = new Uint8Array();
   public imageFileExtension: string = "";
 
-  public constructor(view: RegisterView) {
+  public constructor(view: AuthenticationView) {
     super(view);
     this.userService = new UserService();
   }

@@ -1,23 +1,13 @@
-import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
-import { Presenter, View } from "./Presenter";
+import { AuthenticationView, Presenter, View } from "./Presenter";
 
-export interface LoginView extends View {
-  updateUserInfo: (
-    currentUser: User,
-    displayedUser: User | null,
-    authToken: AuthToken,
-    remember: boolean
-  ) => void;
-}
-
-export class LoginPresenter extends Presenter<LoginView> {
+export class LoginPresenter extends Presenter<AuthenticationView> {
   private userService: UserService;
 
   public isLoading: boolean = false;
   public noError: boolean = true;
 
-  public constructor(view: LoginView) {
+  public constructor(view: AuthenticationView) {
     super(view);
     this.userService = new UserService();
   }
@@ -34,7 +24,7 @@ export class LoginPresenter extends Presenter<LoginView> {
 
       this.view.updateUserInfo(user, user, authToken, rememberMe);
     }, "log user in");
-    
+
     this.isLoading = false;
   }
 }
