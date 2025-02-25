@@ -1,21 +1,28 @@
-import { UserService } from "../model/service/UserService";
 import { Buffer } from "buffer";
 import { ChangeEvent } from "react";
-import { AuthenticationView, Presenter, View } from "./Presenter";
+import { AuthenticationPresenter } from "./AuthenticationPresenter";
 
-export class RegisterPresenter extends Presenter<AuthenticationView> {
-  private userService: UserService;
-
-  public isLoading: boolean = false;
-  public noError: boolean = true;
-
+export class RegisterPresenter extends AuthenticationPresenter {
   public imageUrl: string = "";
   public imageBytes: Uint8Array = new Uint8Array();
   public imageFileExtension: string = "";
 
-  public constructor(view: AuthenticationView) {
-    super(view);
-    this.userService = new UserService();
+  public checkSubmitButtonStatus(
+    firstName: string,
+    lastName: string,
+    alias: string,
+    imageUrl: string,
+    imageFileExtension: string,
+    password: string
+  ): boolean {
+    return (
+      !firstName ||
+      !lastName ||
+      !alias ||
+      !password ||
+      !imageUrl ||
+      !imageFileExtension
+    );
   }
 
   public async doRegister(
@@ -25,22 +32,20 @@ export class RegisterPresenter extends Presenter<AuthenticationView> {
     password: string,
     rememberMe: boolean
   ) {
-    await this.doFailuareReportingOperation(async () => {
-      this.isLoading = true;
-
-      const [user, authToken] = await this.userService.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        this.imageBytes,
-        this.imageFileExtension
-      );
-
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-    }, "register user");
-
-    this.isLoading = false;
+    await this.doAuthenticate(
+      async () => {
+        return this.userService.register(
+          firstName,
+          lastName,
+          alias,
+          password,
+          this.imageBytes,
+          this.imageFileExtension
+        );
+      },
+      "register user",
+      rememberMe
+    );
   }
 
   public handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -82,23 +87,5 @@ export class RegisterPresenter extends Presenter<AuthenticationView> {
 
   public getFileExtension(file: File): string | undefined {
     return file.name.split(".").pop();
-  }
-
-  public checkSubmitButtonStatus(
-    firstName: string,
-    lastName: string,
-    alias: string,
-    imageUrl: string,
-    imageFileExtension: string,
-    password: string
-  ): boolean {
-    return (
-      !firstName ||
-      !lastName ||
-      !alias ||
-      !password ||
-      !imageUrl ||
-      !imageFileExtension
-    );
   }
 }
