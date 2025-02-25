@@ -1,22 +1,21 @@
-import { User } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import UserItem from "../userItem/UserItem";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
 import {
-  UserItemPresenter,
-  UserItemView,
-} from "../../presenters/UserItemPresenter";
+  PagedItemPresenter,
+  PagedItemView,
+} from "../../presenters/PagedItemPresenter";
 
-interface Props {
-  presenterGenerator: (view: UserItemView) => UserItemPresenter;
+interface Props<T, U> {
+  presenterGenerator: (view: PagedItemView<T>) => PagedItemPresenter<T, U>;
+  itemComponentGenerator: (item: T) => JSX.Element;
 }
 
-const UserItemScroller = (props: Props) => {
+const ItemScroller = <T, U>(props: Props<T, U>) => {
   const { displayErrorMessage } = useToastListener();
-  const [items, setItems] = useState<User[]>([]);
-  const [newItems, setNewItems] = useState<User[]>([]);
+  const [items, setItems] = useState<T[]>([]);
+  const [newItems, setNewItems] = useState<T[]>([]);
 
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
@@ -48,8 +47,8 @@ const UserItemScroller = (props: Props) => {
     presenter.reset();
   };
 
-  const listener: UserItemView = {
-    addItems: (newItems: User[]) => setNewItems(newItems),
+  const listener: PagedItemView<T> = {
+    addItems: (newItems: T[]) => setNewItems(newItems),
     displayErrorMessage: displayErrorMessage,
   };
 
@@ -74,7 +73,7 @@ const UserItemScroller = (props: Props) => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <UserItem value={item} />
+            {props.itemComponentGenerator(item)}
           </div>
         ))}
       </InfiniteScroll>
@@ -82,4 +81,4 @@ const UserItemScroller = (props: Props) => {
   );
 };
 
-export default UserItemScroller;
+export default ItemScroller;
