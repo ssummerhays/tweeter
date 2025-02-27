@@ -3,14 +3,18 @@ import { StatusService } from "../model/service/StatusService";
 import { MessageView, Presenter } from "./Presenter";
 
 export class PostStatusPresenter extends Presenter<MessageView> {
-  private statusService: StatusService;
+  private _statusService: StatusService;
 
   public isLoading = false;
   public post = "";
 
   public constructor(view: MessageView) {
     super(view);
-    this.statusService = new StatusService();
+    this._statusService = new StatusService();
+  }
+
+  public get statusService(): StatusService {
+    return this._statusService;
   }
 
   public async submitPost(
