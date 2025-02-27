@@ -12,6 +12,7 @@ const AuthenticationFields = (props: Props) => {
           type="text"
           className="form-control"
           size={50}
+          aria-label="Alias"
           id="aliasInput"
           placeholder="name@example.com"
           onKeyDown={props.onKeyDownFunction}
@@ -23,6 +24,7 @@ const AuthenticationFields = (props: Props) => {
         <input
           type="password"
           className="form-control bottom"
+          aria-label="Password"
           id="passwordInput"
           placeholder="Password"
           onKeyDown={props.onKeyDownFunction}
