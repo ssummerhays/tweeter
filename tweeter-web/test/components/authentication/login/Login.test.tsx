@@ -45,12 +45,13 @@ describe("Login Component", () => {
     expect(signInButton).toBeDisabled();
   });
 
-  it("calls the presenter's login method with correct parameters when the sign-in button is pressed", async () => {
+  it("calls the presenter's doLogin method with correct parameters when the sign-in button is pressed", async () => {
     const mockPresenter = mock<LoginPresenter>();
     const mockPresenterInstance = instance(mockPresenter);
 
     const alias = "testUser";
     const password = "password";
+    const rememberMe = false;
     const { signInButton, aliasField, passwordField, user } =
       renderLoginAndGetElements("/", mockPresenterInstance);
 
@@ -60,7 +61,7 @@ describe("Login Component", () => {
 
     await user.click(signInButton);
 
-    verify(mockPresenter.doLogin(alias, password, anything())).once();
+    verify(mockPresenter.doLogin(alias, password, rememberMe)).once();
   });
 });
 

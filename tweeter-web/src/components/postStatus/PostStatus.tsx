@@ -5,7 +5,11 @@ import useUserInfo from "../userInfo/UserInfoHook";
 import { PostStatusPresenter } from "../../presenters/PostStatusPresenter";
 import { MessageView } from "../../presenters/Presenter";
 
-const PostStatus = () => {
+interface Props {
+  presenter?: PostStatusPresenter;
+}
+
+const PostStatus = (props: Props) => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
     useToastListener();
 
@@ -18,7 +22,7 @@ const PostStatus = () => {
     clearLastInfoMessage: clearLastInfoMessage,
   };
 
-  const [presenter] = useState(new PostStatusPresenter(listener));
+  const [presenter] = useState(props.presenter ?? new PostStatusPresenter(listener));
 
   const submitPost = async (event: React.MouseEvent) => {
     await presenter.submitPost(event, currentUser!, authToken!);
@@ -41,6 +45,7 @@ const PostStatus = () => {
           <textarea
             className="form-control"
             id="postStatusTextArea"
+            aria-label="StatusTextField"
             rows={10}
             placeholder="What's on your mind?"
             value={post}
@@ -54,6 +59,7 @@ const PostStatus = () => {
             id="postStatusButton"
             className="btn btn-md btn-primary me-1"
             type="button"
+            aria-label="PostStatusButton"
             disabled={checkButtonStatus()}
             style={{ width: "8em" }}
             onClick={(event) => submitPost(event)}
@@ -71,6 +77,7 @@ const PostStatus = () => {
           <button
             id="clearStatusButton"
             className="btn btn-md btn-secondary"
+            aria-label="ClearButton"
             type="button"
             disabled={checkButtonStatus()}
             onClick={(event) => clearPost(event)}
