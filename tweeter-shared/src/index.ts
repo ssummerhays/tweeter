@@ -21,12 +21,13 @@ export type { AuthTokenDto } from "./model/dto/AuthTokenDto";
 //
 export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
 export type { LoginRequest } from "./model/net/request/LoginRequest";
+export type { RegisterRequest } from "./model/net/request/RegisterRequest";
 
 //
 // Responses
 //
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
-export type { LoginResponse } from "./model/net/response/LoginResponse";
+export type { AuthResponse } from "./model/net/response/AuthResponse";
 
 //
 // Other
