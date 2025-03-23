@@ -22,12 +22,21 @@ export type { AuthTokenDto } from "./model/dto/AuthTokenDto";
 export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
 export type { LoginRequest } from "./model/net/request/LoginRequest";
 export type { RegisterRequest } from "./model/net/request/RegisterRequest";
+export type { FollowerStatusRequest } from "./model/net/request/FollowerStatusRequest";
+export type { GetFollowCountRequest } from "./model/net/request/GetFollowCountRequest";
+export type { GetUserRequest } from "./model/net/request/GetUserRequest";
+export type { LogoutRequest } from "./model/net/request/LogoutRequest";
+export type { UpdateFollowRequest } from "./model/net/request/UpdateFollowRequest";
 
 //
 // Responses
 //
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
 export type { AuthResponse } from "./model/net/response/AuthResponse";
+export type { FollowerStatusResponse } from "./model/net/response/FollowerStatusResponse";
+export type { GetFollowCountResponse } from "./model/net/response/GetFollowCountResponse";
+export type { GetUserResponse } from "./model/net/response/GetUserResponse";
+export type { UpdateFollowResponse } from "./model/net/response/UpdateFollowResponse";
 
 //
 // Other
