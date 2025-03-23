@@ -106,14 +106,15 @@ export class UserService {
   }
 
   public async getUser(
-    authToken: AuthToken,
+    token: string,
     alias: string
-  ): Promise<User | null> {
+  ): Promise<UserDto | null> {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.findUserByAlias(alias);
+    const user = FakeData.instance.findUserByAlias(alias);
+    return user?.dto ?? null;
   }
 
-  public async logout(authToken: AuthToken): Promise<void> {
+  public async logout(token: string): Promise<void> {
     // Pause so we can see the logging out message. Delete when the call to the server is implemented.
     await new Promise((res) => setTimeout(res, 1000));
   }
