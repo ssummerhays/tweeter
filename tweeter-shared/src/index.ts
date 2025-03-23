@@ -31,6 +31,7 @@ export type { UpdateFollowRequest } from "./model/net/request/UpdateFollowReques
 //
 // Responses
 //
+export type { TweeterResponse } from "./model/net/response/TweeterResponse";
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
 export type { AuthResponse } from "./model/net/response/AuthResponse";
 export type { FollowerStatusResponse } from "./model/net/response/FollowerStatusResponse";
