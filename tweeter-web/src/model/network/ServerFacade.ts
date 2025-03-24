@@ -30,7 +30,8 @@ type AuthRequest = LoginRequest | RegisterRequest;
 type AuthType = "login" | "register";
 
 export class ServerFacade {
-  private SERVER_URL = "TODO: Set this value.";
+  private SERVER_URL =
+    "https://a01hhxr3qe.execute-api.us-west-2.amazonaws.com/prod";
 
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
@@ -40,10 +41,7 @@ export class ServerFacade {
     REQ extends PagedItemRequest<ItemDto>,
     RES extends PagedItemResponse<ItemDto>,
     Item extends User | Status
-  >(
-    request: REQ,
-    description: ItemDescription
-  ): Promise<[Item[], boolean]> {
+  >(request: REQ, description: ItemDescription): Promise<[Item[], boolean]> {
     let endpoint: string;
     if (description === "followers" || description === "followee") {
       endpoint = `/${description}/list`;
