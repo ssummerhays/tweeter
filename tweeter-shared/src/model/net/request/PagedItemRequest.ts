@@ -1,4 +1,6 @@
-export interface PagedItemRequest<T> {
+import { TweeterRequest } from "./TweeterRequest";
+
+export interface PagedItemRequest<T> extends TweeterRequest {
   readonly token: string;
   readonly userAlias: string;
   readonly pageSize: number;
