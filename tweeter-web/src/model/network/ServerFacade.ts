@@ -8,13 +8,12 @@ import {
   GetUserResponse,
   LoginRequest,
   LogoutRequest,
-  PagedStatusItemRequest,
-  PagedStatusItemResponse,
-  PagedUserItemRequest,
-  PagedUserItemResponse,
+  PagedItemRequest,
+  PagedItemResponse,
   PostStatusRequest,
   RegisterRequest,
   Status,
+  StatusDto,
   TokenUserRequest,
   TweeterResponse,
   UpdateFollowResponse,
@@ -23,8 +22,9 @@ import {
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
+type ItemDescription = "followers" | "followee" | "feed" | "story";
+type ItemDto = UserDto | StatusDto;
 type UserType = "followers" | "followee";
-type StatusType = "feed" | "story";
 type UpdateType = "follow" | "unfollow";
 type AuthRequest = LoginRequest | RegisterRequest;
 type AuthType = "login" | "register";
@@ -34,55 +34,57 @@ export class ServerFacade {
 
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
-  public async getMoreUsers(
-    request: PagedUserItemRequest,
-    userType: UserType
-  ): Promise<[User[], boolean]> {
-    const response = await this.clientCommunicator.doPost<
-      PagedUserItemRequest,
-      PagedUserItemResponse
-    >(request, `/${userType}/list`);
-
-    // Convert the UserDto array returned by ClientCommunicator to a User array
-    const items: User[] | null =
-      response.success && response.items
-        ? response.items.map((dto) => User.fromDto(dto) as User)
-        : null;
-
-    const userTypeString = userType === "followers" ? "followers" : "followees";
-    // Handle errors
-    if (response.success) {
-      if (items == null) {
-        throw new Error(`No ${userTypeString} found`);
-      } else {
-        return [items, response.hasMore];
-      }
+  public async getMoreItems<
+    REQ extends PagedItemRequest<ItemDto>,
+    RES extends PagedItemResponse<ItemDto>
+  >(
+    request: REQ,
+    description: ItemDescription
+  ): Promise<[User[] | Status[], boolean]> {
+    let endpoint: string;
+    if (description === "followers" || description === "followee") {
+      endpoint = `/${description}/list`;
     } else {
-      console.error(response);
-      throw new Error(response.message ?? "An unknown error occurred.");
+      endpoint = `/status/${description}`;
     }
-  }
 
-  public async getMoreStatuses(
-    request: PagedStatusItemRequest,
-    statusType: StatusType
-  ): Promise<[Status[], boolean]> {
-    const response = await this.clientCommunicator.doPost<
-      PagedStatusItemRequest,
-      PagedStatusItemResponse
-    >(request, `/${statusType}/list`);
+    const response = await this.clientCommunicator.doPost<REQ, RES>(
+      request,
+      endpoint
+    );
 
-    // Convert the StatusDto array returned by ClientCommunicator to a Status array
-    const items: Status[] | null =
-      response.success && response.items
-        ? response.items.map((dto) => Status.fromDto(dto) as Status)
-        : null;
+    let items: User[] | Status[] | null;
+    if (description === "followers" || description === "followee") {
+      items =
+        response.success && response.items
+          ? response.items
+              .filter((dto): dto is UserDto => (dto as UserDto) !== undefined)
+              .map((dto) => User.fromDto(dto) as User)
+          : null;
+    } else {
+      items =
+        response.success && response.items
+          ? response.items
+              .filter(
+                (dto): dto is StatusDto => (dto as StatusDto) !== undefined
+              )
+              .map((dto) => Status.fromDto(dto) as Status)
+          : null;
+    }
 
-    const statusTypeString = statusType === "story" ? "stories" : "feeds";
+    let descriptionString: string = description;
+    if (description === "followee") {
+      descriptionString = "followees";
+    } else if (description === "feed") {
+      descriptionString = "feeds";
+    } else if (description === "story") {
+      descriptionString = "stories";
+    }
+
     // Handle errors
     if (response.success) {
       if (items == null) {
-        throw new Error(`No ${statusTypeString} found`);
+        throw new Error(`No ${descriptionString} found`);
       } else {
         return [items, response.hasMore];
       }
