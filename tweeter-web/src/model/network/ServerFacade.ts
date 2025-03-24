@@ -34,13 +34,16 @@ export class ServerFacade {
 
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
+  public constructor() {}
+
   public async getMoreItems<
     REQ extends PagedItemRequest<ItemDto>,
-    RES extends PagedItemResponse<ItemDto>
+    RES extends PagedItemResponse<ItemDto>,
+    Item extends User | Status
   >(
     request: REQ,
     description: ItemDescription
-  ): Promise<[User[] | Status[], boolean]> {
+  ): Promise<[Item[], boolean]> {
     let endpoint: string;
     if (description === "followers" || description === "followee") {
       endpoint = `/${description}/list`;
@@ -53,22 +56,22 @@ export class ServerFacade {
       endpoint
     );
 
-    let items: User[] | Status[] | null;
+    let items: Item[] | null;
     if (description === "followers" || description === "followee") {
       items =
         response.success && response.items
-          ? response.items
+          ? (response.items
               .filter((dto): dto is UserDto => (dto as UserDto) !== undefined)
-              .map((dto) => User.fromDto(dto) as User)
+              .map((dto) => User.fromDto(dto) as User) as Item[])
           : null;
     } else {
       items =
         response.success && response.items
-          ? response.items
+          ? (response.items
               .filter(
                 (dto): dto is StatusDto => (dto as StatusDto) !== undefined
               )
-              .map((dto) => Status.fromDto(dto) as Status)
+              .map((dto) => Status.fromDto(dto) as Status) as Item[])
           : null;
     }
 
