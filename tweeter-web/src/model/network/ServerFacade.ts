@@ -12,6 +12,7 @@ import {
   PagedUserItemRequest,
   PagedUserItemResponse,
   PostStatusRequest,
+  RegisterRequest,
   Status,
   TokenUserRequest,
   TweeterResponse,
@@ -24,6 +25,8 @@ import { ClientCommunicator } from "./ClientCommunicator";
 type UserType = "followers" | "followee";
 type StatusType = "feed" | "story";
 type UpdateType = "follow" | "unfollow";
+type AuthRequest = LoginRequest | RegisterRequest;
+type AuthType = "login" | "register";
 
 export class ServerFacade {
   private SERVER_URL = "TODO: Set this value.";
@@ -175,11 +178,11 @@ export class ServerFacade {
     }
   }
 
-  public async login(request: LoginRequest): Promise<[User, AuthToken]> {
+  public async authenticate<REQ extends AuthRequest>(request: REQ, endpoint: AuthType): Promise<[User, AuthToken]> {
     const response = await this.clientCommunicator.doPost<
-      LoginRequest,
+      REQ,
       AuthResponse
-    >(request, "/auth/login");
+    >(request, `/auth/${endpoint}`);
 
     const user: User | null = this.convertUserDtoToUser(response.user);
     const authToken: AuthToken | null = new AuthToken(
