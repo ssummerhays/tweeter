@@ -1,6 +1,6 @@
 import { UserDto } from "../../dto/UserDto";
 
-export interface GetFollowCountRequest {
+export interface TokenUserRequest {
     token: string;
     user: UserDto;
 }
