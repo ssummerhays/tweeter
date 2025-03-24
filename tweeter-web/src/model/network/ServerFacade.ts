@@ -7,6 +7,7 @@ import {
   GetUserRequest,
   GetUserResponse,
   LoginRequest,
+  LogoutRequest,
   PagedStatusItemRequest,
   PagedStatusItemResponse,
   PagedUserItemRequest,
@@ -178,11 +179,14 @@ export class ServerFacade {
     }
   }
 
-  public async authenticate<REQ extends AuthRequest>(request: REQ, endpoint: AuthType): Promise<[User, AuthToken]> {
-    const response = await this.clientCommunicator.doPost<
-      REQ,
-      AuthResponse
-    >(request, `/auth/${endpoint}`);
+  public async authenticate<REQ extends AuthRequest>(
+    request: REQ,
+    endpoint: AuthType
+  ): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<REQ, AuthResponse>(
+      request,
+      `/auth/${endpoint}`
+    );
 
     const user: User | null = this.convertUserDtoToUser(response.user);
     const authToken: AuthToken | null = new AuthToken(
@@ -197,6 +201,19 @@ export class ServerFacade {
       }
       return [user, authToken];
     } else {
+      console.error(response);
+      throw new Error(response.message ?? "An unknown error occurred.");
+    }
+  }
+
+  public async logout(request: LogoutRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      LogoutRequest,
+      TweeterResponse
+    >(request, "/auth/logout");
+
+    // Handle errors
+    if (!response.success) {
       console.error(response);
       throw new Error(response.message ?? "An unknown error occurred.");
     }
