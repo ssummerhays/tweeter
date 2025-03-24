@@ -3,8 +3,10 @@ import {
   PagedStatusItemResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  PostStatusRequest,
   Status,
   TokenUserRequest,
+  TweeterResponse,
   UpdateFollowResponse,
   User,
   UserDto,
@@ -91,6 +93,19 @@ export class ServerFacade {
     if (response.success) {
       return [response.followeeCount, response.followerCount];
     } else {
+      console.error(response);
+      throw new Error(response.message ?? "An unknown error occurred.");
+    }
+  }
+
+  public async postStatus(request: PostStatusRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      PostStatusRequest,
+      TweeterResponse
+    >(request, "/status/post");
+
+    // Handle errors
+    if (!response.success) {
       console.error(response);
       throw new Error(response.message ?? "An unknown error occurred.");
     }
