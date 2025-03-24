@@ -1,4 +1,5 @@
 import {
+  GetFollowCountResponse,
   PagedStatusItemRequest,
   PagedStatusItemResponse,
   PagedUserItemRequest,
@@ -106,6 +107,24 @@ export class ServerFacade {
 
     // Handle errors
     if (!response.success) {
+      console.error(response);
+      throw new Error(response.message ?? "An unknown error occurred.");
+    }
+  }
+
+  public async getCounts(
+    request: TokenUserRequest,
+    endpoint: UserType
+  ): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      TokenUserRequest,
+      GetFollowCountResponse
+    >(request, `/${endpoint}/count`);
+
+    // Handle errors
+    if (response.success) {
+      return response.count;
+    } else {
       console.error(response);
       throw new Error(response.message ?? "An unknown error occurred.");
     }
