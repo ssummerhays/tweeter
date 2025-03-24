@@ -25,10 +25,9 @@ export type { PagedStatusItemRequest } from "./model/net/request/PagedStatusItem
 export type { LoginRequest } from "./model/net/request/LoginRequest";
 export type { RegisterRequest } from "./model/net/request/RegisterRequest";
 export type { FollowerStatusRequest } from "./model/net/request/FollowerStatusRequest";
-export type { GetFollowCountRequest } from "./model/net/request/GetFollowCountRequest";
+export type { TokenUserRequest } from "./model/net/request/TokenUserRequest";
 export type { GetUserRequest } from "./model/net/request/GetUserRequest";
 export type { LogoutRequest } from "./model/net/request/LogoutRequest";
-export type { UpdateFollowRequest } from "./model/net/request/UpdateFollowRequest";
 export type { PostStatusRequest } from "./model/net/request/PostStatusRequest";
 
 //
