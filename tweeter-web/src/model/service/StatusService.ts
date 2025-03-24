@@ -53,13 +53,10 @@ export class StatusService {
     authToken: AuthToken,
     newStatus: Status
   ): Promise<void> {
-    // Pause so we can see the logging out message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
     const request: PostStatusRequest = {
       token: authToken.token,
       newStatus: newStatus.dto,
     };
-    this.serverFacade.postStatus(request);
+    await this.serverFacade.postStatus(request);
   }
 }
