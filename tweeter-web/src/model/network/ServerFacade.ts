@@ -2,6 +2,8 @@ import {
   FollowerStatusRequest,
   FollowerStatusResponse,
   GetFollowCountResponse,
+  GetUserRequest,
+  GetUserResponse,
   PagedStatusItemRequest,
   PagedStatusItemResponse,
   PagedUserItemRequest,
@@ -143,6 +145,30 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       return response.isFollower;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "An unknown error occurred.");
+    }
+  }
+
+  public async getUser(request: GetUserRequest): Promise<User> {
+    const response = await this.clientCommunicator.doPost<
+      GetUserRequest,
+      GetUserResponse
+    >(request, "/user");
+
+    // Convert the UserDto returned by ClientCommunicator to a User
+    const user: User | null = response.success
+      ? User.fromDto(response.user)
+      : null;
+
+    // Handle errors
+    if (response.success) {
+      if (user == null) {
+        throw new Error("No user found");
+      } else {
+        return user;
+      }
     } else {
       console.error(response);
       throw new Error(response.message ?? "An unknown error occurred.");
