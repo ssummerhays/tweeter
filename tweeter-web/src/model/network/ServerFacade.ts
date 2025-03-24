@@ -1,9 +1,12 @@
 import {
+  AuthResponse,
+  AuthToken,
   FollowerStatusRequest,
   FollowerStatusResponse,
   GetFollowCountResponse,
   GetUserRequest,
   GetUserResponse,
+  LoginRequest,
   PagedStatusItemRequest,
   PagedStatusItemResponse,
   PagedUserItemRequest,
@@ -157,10 +160,7 @@ export class ServerFacade {
       GetUserResponse
     >(request, "/user");
 
-    // Convert the UserDto returned by ClientCommunicator to a User
-    const user: User | null = response.success
-      ? User.fromDto(response.user)
-      : null;
+    const user: User | null = this.convertUserDtoToUser(response.user);
 
     // Handle errors
     if (response.success) {
@@ -173,5 +173,36 @@ export class ServerFacade {
       console.error(response);
       throw new Error(response.message ?? "An unknown error occurred.");
     }
+  }
+
+  public async login(request: LoginRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      LoginRequest,
+      AuthResponse
+    >(request, "/auth/login");
+
+    const user: User | null = this.convertUserDtoToUser(response.user);
+    const authToken: AuthToken | null = new AuthToken(
+      response.authToken.token,
+      response.authToken.timestamp
+    );
+
+    // Handle errors
+    if (response.success) {
+      if (user == null || authToken == null) {
+        throw new Error("No user or authToken found");
+      }
+      return [user, authToken];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "An unknown error occurred.");
+    }
+  }
+
+  private convertUserDtoToUser(userDto: UserDto | null): User | null {
+    if (userDto == null) {
+      return null;
+    }
+    return User.fromDto(userDto) as User;
   }
 }
