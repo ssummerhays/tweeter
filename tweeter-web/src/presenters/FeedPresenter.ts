@@ -3,11 +3,11 @@ import { StatusItemPresenter } from "./StatusItemPresenter";
 import { PAGE_SIZE } from "./PagedItemPresenter";
 
 export class FeedPresenter extends StatusItemPresenter {
-  protected getMoreItems(
+  protected async getMoreItems(
     authToken: AuthToken,
     userAlias: string
   ): Promise<[Status[], boolean]> {
-    return this.service.loadMoreFeedItems(
+    return await this.service.loadMoreFeedItems(
       authToken,
       userAlias,
       PAGE_SIZE,

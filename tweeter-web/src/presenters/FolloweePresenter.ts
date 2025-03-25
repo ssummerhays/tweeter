@@ -3,11 +3,11 @@ import { UserItemPresenter } from "./UserItemPresenter";
 import { PAGE_SIZE } from "./PagedItemPresenter";
 
 export class FolloweePresenter extends UserItemPresenter {
-  protected getMoreItems(
+  protected async getMoreItems(
     authToken: AuthToken,
     userAlias: string
   ): Promise<[User[], boolean]> {
-    return this.service.loadMoreFollowees(
+    return await this.service.loadMoreFollowees(
       authToken,
       userAlias,
       PAGE_SIZE,
