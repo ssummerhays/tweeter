@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
@@ -18,6 +18,7 @@ const ItemScroller = <T, U>(props: Props<T, U>) => {
   const [newItems, setNewItems] = useState<T[]>([]);
 
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
+  const isFirstRender = useRef(true);
 
   const { displayedUser, authToken } = useUserInfo();
 
@@ -28,6 +29,10 @@ const ItemScroller = <T, U>(props: Props<T, U>) => {
 
   // Load initial items whenever the displayed user changes. Done in a separate useEffect hook so the changes from reset will be visible.
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     if (changedDisplayedUser) {
       loadMoreItems();
     }
@@ -55,7 +60,7 @@ const ItemScroller = <T, U>(props: Props<T, U>) => {
   const [presenter] = useState(props.presenterGenerator(listener));
 
   const loadMoreItems = async () => {
-    presenter.loadMoreItems(authToken!, displayedUser!.alias);
+    await presenter.loadMoreItems(authToken!, displayedUser!.alias);
     setChangedDisplayedUser(false);
   };
 
