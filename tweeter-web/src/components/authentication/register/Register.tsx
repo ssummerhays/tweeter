@@ -53,7 +53,7 @@ const Register = () => {
   const [presenter] = useState(new RegisterPresenter(listener));
 
   const doRegister = async () => {
-    presenter.doRegister(firstName, lastName, alias, password, rememberMe);
+    await presenter.doRegister(firstName, lastName, alias, password, rememberMe);
     if (presenter.noError) {
       navigate("/");
     }
