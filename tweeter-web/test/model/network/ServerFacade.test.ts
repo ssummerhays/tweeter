@@ -3,6 +3,7 @@ import {
   PagedItemResponse,
   PagedUserItemRequest,
   RegisterRequest,
+  TokenUserRequest,
   User,
   UserDto,
 } from "tweeter-shared";
@@ -12,6 +13,12 @@ import "isomorphic-fetch";
 
 describe("Server Facade", () => {
   const serverFacade: ServerFacade = new ServerFacade();
+  const allen = new User(
+    "Allen",
+    "Anderson",
+    "@allen",
+    "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"
+  );
 
   it("registers a user", async () => {
     const request: RegisterRequest = {
@@ -28,12 +35,10 @@ describe("Server Facade", () => {
       "register"
     );
 
-    expect(user.alias).toBe("@allen");
-    expect(user.firstName).toBe("Allen");
-    expect(user.lastName).toBe("Anderson");
-    expect(user.imageUrl).toBe(
-      "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"
-    );
+    expect(user.alias).toBe(allen.alias);
+    expect(user.firstName).toBe(allen.firstName);
+    expect(user.lastName).toBe(allen.lastName);
+    expect(user.imageUrl).toBe(allen.imageUrl);
 
     expect(authToken.token).toBeDefined();
     expect(authToken.timestamp).toBeDefined();
@@ -54,8 +59,32 @@ describe("Server Facade", () => {
     >(request, "followers");
 
     expect(followers.length).toBe(10);
-    expect(followers[0].alias).toBe("@allen");
+    expect(followers[0].alias).toBe(allen.alias);
 
     expect(hasMore).toBe(true);
+  });
+
+  it("gets followees count", async () => {
+    const request: TokenUserRequest = {
+      token: "token",
+      user: allen,
+    };
+
+    const count = await serverFacade.getCounts(request, "followee");
+
+    expect(count).toBeDefined();
+    expect(count).toBeGreaterThan(0);
+  });
+
+  it("gets followers count", async () => {
+    const request: TokenUserRequest = {
+      token: "token",
+      user: allen,
+    };
+
+    const count = await serverFacade.getCounts(request, "followers");
+
+    expect(count).toBeDefined();
+    expect(count).toBeGreaterThan(0);
   });
 });
