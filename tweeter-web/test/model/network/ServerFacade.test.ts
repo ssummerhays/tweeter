@@ -1,4 +1,11 @@
-import { RegisterRequest } from "tweeter-shared";
+import {
+  PagedItemRequest,
+  PagedItemResponse,
+  PagedUserItemRequest,
+  RegisterRequest,
+  User,
+  UserDto,
+} from "tweeter-shared";
 import { ServerFacade } from "../../../src/model/network/ServerFacade";
 
 import "isomorphic-fetch";
@@ -30,5 +37,25 @@ describe("Server Facade", () => {
 
     expect(authToken.token).toBeDefined();
     expect(authToken.timestamp).toBeDefined();
+  });
+
+  it("gets followers", async () => {
+    const request: PagedUserItemRequest = {
+      token: "token",
+      userAlias: "alias",
+      pageSize: 10,
+      lastItem: null,
+    };
+
+    const [followers, hasMore] = await serverFacade.getMoreItems<
+      PagedItemRequest<UserDto>,
+      PagedItemResponse<UserDto>,
+      User
+    >(request, "followers");
+
+    expect(followers.length).toBe(10);
+    expect(followers[0].alias).toBe("@allen");
+
+    expect(hasMore).toBe(true);
   });
 });
