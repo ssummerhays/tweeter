@@ -1,5 +1,4 @@
 import {
-  User,
   AuthToken,
   FakeData,
   UserDto,

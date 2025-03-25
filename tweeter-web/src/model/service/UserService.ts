@@ -1,7 +1,6 @@
 import {
   User,
   AuthToken,
-  FakeData,
   LoginRequest,
   RegisterRequest,
   FollowerStatusRequest,
