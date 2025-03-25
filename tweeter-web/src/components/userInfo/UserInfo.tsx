@@ -8,6 +8,7 @@ import { UserInfoPresenter } from "../../presenters/UserInfoPresenter";
 import { MessageView } from "../../presenters/Presenter";
 
 const UserInfo = () => {
+  const [countChanged, setCountChanged] = useState(true);
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
     useToastListener();
 
@@ -24,6 +25,12 @@ const UserInfo = () => {
     setNumbFollowers(authToken!, displayedUser!);
   }, [displayedUser]);
 
+  useEffect(() => {
+    if (countChanged) {
+      setCountChanged(false);
+    }
+  }, [countChanged]);
+
   const listener: MessageView = {
     displayErrorMessage: displayErrorMessage,
     displayInfoMessage: displayInfoMessage,
@@ -37,21 +44,22 @@ const UserInfo = () => {
     currentUser: User,
     displayedUser: User
   ) => {
-    presenter.setIsFollowerStatus(authToken, currentUser, displayedUser);
+    await presenter.setIsFollowerStatus(authToken, currentUser, displayedUser);
   };
 
   const setNumbFollowees = async (
     authToken: AuthToken,
     displayedUser: User
   ) => {
-    presenter.setNumbFollowees(authToken, displayedUser);
+    await presenter.setNumbFollowees(authToken, displayedUser);
+    setCountChanged(true);
   };
 
   const setNumbFollowers = async (
     authToken: AuthToken,
     displayedUser: User
   ) => {
-    presenter.setNumbFollowers(authToken, displayedUser);
+    await presenter.setNumbFollowers(authToken, displayedUser);
   };
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
@@ -62,13 +70,13 @@ const UserInfo = () => {
   const followDisplayedUser = async (
     event: React.MouseEvent
   ): Promise<void> => {
-    presenter.followDisplayedUser(event, displayedUser!, authToken!);
+    await presenter.followDisplayedUser(event, displayedUser!, authToken!);
   };
 
   const unfollowDisplayedUser = async (
     event: React.MouseEvent
   ): Promise<void> => {
-    presenter.unfollowDisplayedUser(event, displayedUser!, authToken!);
+    await presenter.unfollowDisplayedUser(event, displayedUser!, authToken!);
   };
 
   return (
