@@ -1,6 +1,7 @@
 import {
   AuthResponse,
   AuthToken,
+  AuthTokenDto,
   FollowerStatusRequest,
   FollowerStatusResponse,
   GetFollowCountResponse,
@@ -192,9 +193,8 @@ export class ServerFacade {
     );
 
     const user: User | null = this.convertUserDtoToUser(response.user);
-    const authToken: AuthToken | null = new AuthToken(
-      response.authToken.token,
-      response.authToken.timestamp
+    const authToken: AuthToken | null = this.convertAuthDtoToAuth(
+      response.authToken
     );
 
     // Handle errors
@@ -227,5 +227,12 @@ export class ServerFacade {
       return null;
     }
     return User.fromDto(userDto) as User;
+  }
+
+  private convertAuthDtoToAuth(authDto: AuthTokenDto): AuthToken | null {
+    if (authDto == null) {
+      return null;
+    }
+    return new AuthToken(authDto.token, authDto.timestamp);
   }
 }
