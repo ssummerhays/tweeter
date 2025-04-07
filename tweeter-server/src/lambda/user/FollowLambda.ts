@@ -1,10 +1,12 @@
 import { TokenUserRequest, UpdateFollowResponse } from "tweeter-shared";
 import { UserService } from "../../model/service/UserService";
+import { DynamoDaoFactory } from "../../dao/factories/DynamoDaoFactory";
 
 export const handler = async (
   request: TokenUserRequest
 ): Promise<UpdateFollowResponse> => {
-  const userService = new UserService();
+  const userService = new UserService(new DynamoDaoFactory());
+  
   const [followerCount, followeeCount] = await userService.follow(
     request.token,
     request.user
