@@ -69,7 +69,7 @@ describe("PostStatus Component", () => {
     await user.type(statusField, "test status");
 
     await user.click(postStatusButton);
-    verify(mockPresenter.submitPost(anything(), mockUserInstance, mockAuthTokenInstance)).once();
+    verify(mockPresenter.submitPost(anything(), mockUserInstance, mockAuthTokenInstance, "test status")).once();
   });
 });
 
