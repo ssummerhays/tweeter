@@ -24,7 +24,7 @@ const useUserNavigation = (): UserNavigation => {
   const [presenter] = useState(new UserNavigationPresenter(listener));
 
   const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
-    presenter.navigateToUser(event);
+    await presenter.navigateToUser(event);
   };
 
   return { navigateToUser };

@@ -20,7 +20,7 @@ export class UserNavigationPresenter extends Presenter<UserNavigationView> {
     event.preventDefault();
     await this.doFailuareReportingOperation(async () => {
       const alias = this.extractAlias(event.target.toString());
-
+      
       const user = await this.userService.getUser(this.view.authToken!, alias);
 
       if (!!user) {
@@ -31,10 +31,10 @@ export class UserNavigationPresenter extends Presenter<UserNavigationView> {
         }
       }
     }, "get user");
-  };
+  }
 
   public extractAlias(value: string): string {
     const index = value.indexOf("@");
     return value.substring(index);
-  };
+  }
 }

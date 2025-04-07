@@ -33,9 +33,9 @@ const Register = () => {
     );
   };
 
-  const registerOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
+  const registerOnEnter = async (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key == "Enter" && !checkSubmitButtonStatus()) {
-      doRegister();
+      await doRegister();
     }
   };
 
