@@ -12,8 +12,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "tweeter-shared": "file:../tweeter-shared",
+    "@aws-sdk/client-s3": "^3.779.0",
+    "@aws-sdk/lib-dynamodb": "^3.778.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
     "date-fns": "^3.3.1",
+    "tweeter-shared": "file:../tweeter-shared",
     "uuid": "^9.0.1"
   }
 }
