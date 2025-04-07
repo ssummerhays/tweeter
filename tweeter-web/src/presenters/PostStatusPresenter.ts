@@ -6,7 +6,6 @@ export class PostStatusPresenter extends Presenter<MessageView> {
   private _statusService: StatusService;
 
   public isLoading = false;
-  public post = "";
 
   public constructor(view: MessageView) {
     super(view);
@@ -20,7 +19,8 @@ export class PostStatusPresenter extends Presenter<MessageView> {
   public async submitPost(
     event: React.MouseEvent,
     currentUser: User,
-    authToken: AuthToken
+    authToken: AuthToken,
+    post: string
   ) {
     event.preventDefault();
 
@@ -28,11 +28,10 @@ export class PostStatusPresenter extends Presenter<MessageView> {
       this.isLoading = true;
       this.view.displayInfoMessage("Posting status...", 0);
 
-      const status = new Status(this.post, currentUser, Date.now());
+      const status = new Status(post, currentUser, Date.now());
 
       await this.statusService.postStatus(authToken, status);
 
-      this.post = "";
       this.view.displayInfoMessage("Status posted!", 2000);
     }, "post the status");
 

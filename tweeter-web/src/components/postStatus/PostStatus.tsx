@@ -25,7 +25,7 @@ const PostStatus = (props: Props) => {
   const [presenter] = useState(props.presenter ?? new PostStatusPresenter(listener));
 
   const submitPost = async (event: React.MouseEvent) => {
-    await presenter.submitPost(event, currentUser!, authToken!);
+    await presenter.submitPost(event, currentUser!, authToken!, post);
     clearPost(event);
   };
 
