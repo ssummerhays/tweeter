@@ -9,6 +9,7 @@ import { MessageView } from "../../presenters/Presenter";
 
 const UserInfo = () => {
   const [countChanged, setCountChanged] = useState(true);
+  const [isFollower, setIsFollower] = useState(false);
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
     useToastListener();
 
@@ -45,6 +46,11 @@ const UserInfo = () => {
     displayedUser: User
   ) => {
     await presenter.setIsFollowerStatus(authToken, currentUser, displayedUser);
+    setDisplayFollowerStatus();
+  };
+
+  const setDisplayFollowerStatus = () => {
+    setIsFollower(presenter.isFollower);
   };
 
   const setNumbFollowees = async (
@@ -60,6 +66,7 @@ const UserInfo = () => {
     displayedUser: User
   ) => {
     await presenter.setNumbFollowers(authToken, displayedUser);
+    setCountChanged(true);
   };
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
@@ -71,12 +78,14 @@ const UserInfo = () => {
     event: React.MouseEvent
   ): Promise<void> => {
     await presenter.followDisplayedUser(event, displayedUser!, authToken!);
+    setIsFollower(true);
   };
 
   const unfollowDisplayedUser = async (
     event: React.MouseEvent
   ): Promise<void> => {
     await presenter.unfollowDisplayedUser(event, displayedUser!, authToken!);
+    setIsFollower(false);
   };
 
   return (
@@ -121,7 +130,7 @@ const UserInfo = () => {
             <form>
               {displayedUser !== currentUser && (
                 <div className="form-group">
-                  {presenter.isFollower ? (
+                  {isFollower ? (
                     <button
                       id="unFollowButton"
                       className="btn btn-md btn-secondary me-1"
