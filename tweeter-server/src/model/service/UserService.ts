@@ -106,28 +106,12 @@ export class UserService extends Service {
     user: UserDto
   ): Promise<number> {
     await this.validateAuth(authToken);
-
-    let lastFolloweeAlias: string | undefined = undefined;
-    let hasMore = true;
-    const pageSize = 25;
-    let followeesCount = 0;
-
-    while (hasMore) {
-      const {
-        followeeAliases,
-        hasMore: more,
-        lastFolloweeAlias: lastKey,
-      } = await this.followDao.getPageOfFollowees(
-        user.alias,
-        pageSize,
-        lastFolloweeAlias
-      );
-
-      followeesCount += followeeAliases.length;
-      lastFolloweeAlias = lastKey;
-      hasMore = more;
+    const userResult = await this.userDao.getUserByAlias(user.alias);
+    if (!userResult) {
+      throw new Error("[Bad Request] no user with given alias")
+    } else {
+      return userResult[3]
     }
-    return followeesCount;
   }
 
   public async getFollowerCount(
@@ -135,28 +119,12 @@ export class UserService extends Service {
     user: UserDto
   ): Promise<number> {
     await this.validateAuth(authToken);
-
-    let lastFollowerAlias: string | undefined = undefined;
-    let hasMore = true;
-    const pageSize = 25;
-    let followersCount = 0;
-
-    while (hasMore) {
-      const {
-        followerAliases,
-        hasMore: more,
-        lastFollowerAlias: lastKey,
-      } = await this.followDao.getPageOfFollowers(
-        user.alias,
-        pageSize,
-        lastFollowerAlias
-      );
-
-      followersCount += followerAliases.length;
-      lastFollowerAlias = lastKey;
-      hasMore = more;
+    const userResult = await this.userDao.getUserByAlias(user.alias);
+    if (!userResult) {
+      throw new Error("[Bad Request] no user with given alias");
+    } else {
+      return userResult[2];
     }
-    return followersCount;
   }
 
   public async follow(
@@ -165,8 +133,10 @@ export class UserService extends Service {
   ): Promise<[followerCount: number, followeeCount: number]> {
     await this.validateAuth(token);
     const userAlias = await this.authDao.getAliasByAuth(token);
-    console.log(userAlias);
     await this.followDao.createFollow(userAlias, userToFollow.alias);
+
+    await this.userDao.updateFollowCounts(userAlias, 0, 1);
+    await this.userDao.updateFollowCounts(userToFollow.alias, 1, 0);
 
     const followerCount = await this.getFollowerCount(token, userToFollow);
     const followeeCount = await this.getFolloweeCount(token, userToFollow);
@@ -189,6 +159,9 @@ export class UserService extends Service {
   ): Promise<[followerCount: number, followeeCount: number]> {
     const userAlias = await this.validateAuth(token);
     await this.followDao.deleteFollow(userAlias, userToUnfollow.alias);
+
+    await this.userDao.updateFollowCounts(userAlias, 0, -1);
+    await this.userDao.updateFollowCounts(userToUnfollow.alias, -1, 0);
 
     const followerCount = await this.getFollowerCount(token, userToUnfollow);
     const followeeCount = await this.getFolloweeCount(token, userToUnfollow);
