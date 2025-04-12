@@ -4,6 +4,7 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
+  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
@@ -22,7 +23,13 @@ export class DynamoUserDao implements UserDao {
   async createUser(user: UserDto, hashedPassword: string): Promise<void> {
     const command = new PutCommand({
       TableName: this.tableName,
-      Item: { alias: user.alias, user, hashedPassword },
+      Item: {
+        alias: user.alias,
+        user,
+        hashedPassword,
+        follower_count: 0,
+        followee_count: 0,
+      },
     });
     try {
       await this.client.send(command);
@@ -31,7 +38,9 @@ export class DynamoUserDao implements UserDao {
     }
   }
 
-  async getUserByAlias(alias: string): Promise<[UserDto, string] | null> {
+  async getUserByAlias(
+    alias: string
+  ): Promise<[UserDto, string, number, number] | null> {
     const command = new GetCommand({
       TableName: this.tableName,
       Key: { alias },
@@ -42,6 +51,34 @@ export class DynamoUserDao implements UserDao {
     if (!result.Item) {
       return null;
     }
-    return [result.Item.user as UserDto, result.Item.hashedPassword];
+    return [
+      result.Item.user as UserDto,
+      result.Item.hashedPassword,
+      result.Item.follower_count,
+      result.Item.followee_count,
+    ];
+  }
+
+  async updateFollowCounts(
+    alias: string,
+    followerCountChange: number,
+    followeeCountChange: number
+  ): Promise<void> {
+    const command = new UpdateCommand({
+      TableName: this.tableName,
+      Key: { alias },
+      UpdateExpression:
+        "SET follower_count = follower_count + :r, followee_count = followee_count + :e",
+      ExpressionAttributeValues: {
+        ":r": followerCountChange,
+        ":e": followeeCountChange,
+      },
+    });
+
+    try {
+      await this.client.send(command);
+    } catch (error) {
+      throw new Error("[Server Error] failed to update follow counts");
+    }
   }
 }
