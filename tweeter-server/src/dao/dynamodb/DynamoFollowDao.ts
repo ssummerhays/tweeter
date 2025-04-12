@@ -37,7 +37,6 @@ export class DynamoFollowDao implements FollowDao {
     try {
       result = await this.client.send(new GetCommand(params));
     } catch (error) {
-      throw error;
       throw new Error("[Server Error] failed to get follow");
     }
 
