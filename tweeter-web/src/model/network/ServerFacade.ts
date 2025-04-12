@@ -107,7 +107,7 @@ export class ServerFacade {
 
     // Handle errors
     if (response.success) {
-      return [response.followeeCount, response.followerCount];
+      return [response.followerCount, response.followeeCount];
     } else {
       console.error(response);
       throw new Error(response.message ?? "An unknown error occurred.");
