@@ -108,9 +108,9 @@ export class UserService extends Service {
     await this.validateAuth(authToken);
     const userResult = await this.userDao.getUserByAlias(user.alias);
     if (!userResult) {
-      throw new Error("[Bad Request] no user with given alias")
+      throw new Error("[Bad Request] no user with given alias");
     } else {
-      return userResult[3]
+      return userResult[3];
     }
   }
 
@@ -196,6 +196,11 @@ export class UserService extends Service {
 
   public async logout(token: string): Promise<void> {
     await this.authDao.deleteToken(token);
+  }
+
+  public async getUserByToken(token: string) {
+    const alias = await this.authDao.getAliasByAuth(token);
+    return this.getUser(token, alias);
   }
 
   private getAuthTokenDto(authToken: AuthToken): AuthTokenDto {
