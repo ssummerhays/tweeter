@@ -41,6 +41,35 @@ export abstract class DynamoStatusDao implements StatusDao {
     }
   }
 
+  async batchCreateAliasesStatus(
+    aliases: string[],
+    status: StatusDto
+  ): Promise<void> {
+    const requestItems = aliases.map((alias) => ({
+      PutRequest: {
+        Item: {
+          alias: alias,
+          user: status.user,
+          timestamp: status.timestamp,
+          post: status.post,
+          segments: status.segments,
+        },
+      },
+    }));
+
+    const params = {
+      RequestItems: {
+        [this.tableName]: requestItems,
+      },
+    };
+
+    try {
+      await this.client.send(new BatchWriteCommand(params));
+    } catch (error) {
+      throw new Error("[Server Error] failed to create statuses");
+    }
+  }
+
   async batchCreateStatus(alias: string, statuses: StatusDto[]): Promise<void> {
     const requestItems = statuses.map((status) => ({
       PutRequest: {
