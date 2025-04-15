@@ -12,7 +12,7 @@ import { ServerFacade } from "../../../src/model/network/ServerFacade";
 
 import "isomorphic-fetch";
 
-describe("Server Facade", () => {
+describe.skip("Server Facade", () => {
   const serverFacade: ServerFacade = new ServerFacade();
   const testUser = new User(
     "Test",

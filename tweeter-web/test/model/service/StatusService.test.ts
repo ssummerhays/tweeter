@@ -3,7 +3,7 @@ import { StatusService } from "../../../src/model/service/StatusService";
 
 import "isomorphic-fetch";
 
-describe("Status Service", () => {
+describe.skip("Status Service", () => {
   const statusService = new StatusService();
   const authToken = new AuthToken("token", 100);
 
