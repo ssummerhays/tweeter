@@ -42,9 +42,9 @@ export const handler = async (event: any) => {
       await sqsClient.send(sqsCommand);
 
       const elapsedTime = new Date().getTime() - startTimeMillis;
-      if (elapsedTime < 600) {
+      if (elapsedTime < 1000) {
         await new Promise<void>((resolve) =>
-          setTimeout(resolve, 600 - elapsedTime)
+          setTimeout(resolve, 1000 - elapsedTime)
         );
       }
     }
