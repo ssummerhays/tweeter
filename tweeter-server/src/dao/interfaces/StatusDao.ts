@@ -3,6 +3,7 @@ import { StatusDto } from "tweeter-shared";
 export interface StatusDao {
   createStatus(alias: string, status: StatusDto): Promise<void>;
   batchCreateStatus(alias: string, statuses: StatusDto[]): Promise<void>;
+  batchCreateAliasesStatus(aliases: string[], status: StatusDto): Promise<void>;
   batchDeleteStatus(
     delteItems: {
       alias: string;
