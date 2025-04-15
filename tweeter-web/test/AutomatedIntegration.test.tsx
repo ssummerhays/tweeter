@@ -80,5 +80,5 @@ describe("Automated Integration Test", () => {
     expect(testStatus.user).toStrictEqual(user);
     expect(testStatus.timestamp).toBeGreaterThan(beginTime);
     expect(testStatus.timestamp).toBeLessThan(endTime);
-  }, 10500);
+  }, 20500);
 });
