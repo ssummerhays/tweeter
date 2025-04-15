@@ -1,4 +1,4 @@
-import { StatusDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { AbstractFactory } from "../../dao/factories/AbstractFactory";
 import { Service } from "./Service";
 import { FeedDao } from "../../dao/interfaces/FeedDao";
@@ -53,30 +53,9 @@ export class StatusService extends Service {
   public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
     await this.validateAuth(token);
     await this.storyDao.createStatus(newStatus.user.alias, newStatus);
+  }
 
-    let lastFollowerAlias: string | undefined = undefined;
-    let hasMore = true;
-    const pageSize = 25;
-
-    while (hasMore) {
-      const {
-        followerAliases,
-        hasMore: more,
-        lastFollowerAlias: lastKey,
-      } = await this.followDao.getPageOfFollowers(
-        newStatus.user.alias,
-        pageSize,
-        lastFollowerAlias
-      );
-
-      lastFollowerAlias = lastKey;
-      hasMore = more;
-
-      await Promise.all(
-        followerAliases.map((followerAlias) =>
-          this.feedDao.createStatus(followerAlias, newStatus)
-        )
-      );
-    }
+  public async updateFeeds(status: StatusDto, followers: string[]) {
+    await this.feedDao.batchCreateAliasesStatus(followers, status);
   }
 }
